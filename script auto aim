@@ -1,0 +1,80 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sleitnick/rbx-ui-library/main/source.lua"))()
+
+-- Criando a Janela Principal
+local Window = Library:CreateWindow({
+    Name = "Daxh Hub ⚡ Blox Fruits Auto Aim",
+    Theme = {
+        Main = Color3.fromRGB(0, 0, 0),
+        Accent = Color3.fromRGB(0, 255, 0), -- Neon Green
+        Text = Color3.fromRGB(255, 255, 255)
+    }
+})
+-- Estilização Neon via Código para Delta
+local function ApplyNeonStyle(obj)
+    obj.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    obj.TextColor3 = Color3.fromRGB(0, 0, 0)
+    obj.BorderSizePixel = 0
+    -- Simulação de Glow/Brilho
+    local glow = Instance.new("UIStroke")
+    glow.Thickness = 2
+    glow.Color = Color3.fromRGB(0, 255, 0)
+    glow.Parent = obj
+end
+
+-- Variáveis de Controle
+local AutoAimEnabled = false
+local Target = nil
+
+-- Função de Auto Aim (Lógica)
+game:GetService("RunService").RenderStepped:Connect(function()
+    if AutoAimEnabled then
+        local closest = nil
+        local dist = math.huge
+
+        for _, v in pairs(game.Players:GetPlayers()) do
+            if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                local magnitude = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude
+                if magnitude < dist then
+                    dist = magnitude
+                    closest = v
+                end
+            end
+        end
+
+        if closest then
+            -- Suaviza a mira para o alvo mais próximo
+            game.Workspace.CurrentCamera.CFrame = CFrame.new(game.Workspace.CurrentCamera.CFrame.Position, closest.Character.HumanoidRootPart.Position)
+        end
+    end
+end)
+
+-- Aba de Configurações
+local MainTab = Window:CreateTab("Combate")
+
+-- Botão Ativar (Estilo Neon Green)
+local ActivateBtn = MainTab:CreateButton({
+    Name = "✨ ATIVAR AUTO AIM ✨",
+    Callback = function()
+        AutoAimEnabled = true
+        print("Auto Aim Ativado!")
+        -- Efeito visual de confirmação
+        ActivateBtn.Text = "✅ ATIVADO"
+    end
+})
+
+-- Botão Desativar (Estilo Neon Green)
+local DeactivateBtn = MainTab:CreateButton({
+    Name = "❌ DESATIVAR AUTO AIM ❌",
+    Callback = function()
+        AutoAimEnabled = false
+        print("Auto Aim Desativado!")
+        ActivateBtn.Text = "✨ ATIVAR AUTO AIM ✨"
+        DeactivateBtn.Text = "❌ DESATIVAR AUTO AIM ❌"
+    end
+})
+
+-- Aplicando o visual neon aos botões (Simulação de estilo customizado)
+ApplyNeonStyle(ActivateBtn)
+ApplyNeonStyle(DeactivateBtn)
+
+print("Daxh Hub carregado com sucesso!")
